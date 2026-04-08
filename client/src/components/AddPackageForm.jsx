@@ -5,7 +5,9 @@ function AddPackageForm({ onAddPackage }) {
     size: 'SMALL',
     trackingNumber: '',
     senderName: '',
+    senderEmail: '',
     recipientName: '',
+    recipientEmail: '',
   });
 
   const handleChange = (e) => {
@@ -22,7 +24,9 @@ function AddPackageForm({ onAddPackage }) {
     if (
       !formData.trackingNumber ||
       !formData.senderName ||
-      !formData.recipientName
+      !formData.senderEmail ||
+      !formData.recipientName ||
+      !formData.recipientEmail
     ) {
       alert('Please fill all fields');
       return;
@@ -36,7 +40,9 @@ function AddPackageForm({ onAddPackage }) {
       size: 'SMALL',
       trackingNumber: '',
       senderName: '',
+      senderEmail: '',
       recipientName: '',
+      recipientEmail: '',
     });
   };
 
@@ -44,42 +50,88 @@ function AddPackageForm({ onAddPackage }) {
     <div className="card">
       <h2>➕ Add New Package</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label>Package Size *</label>
-        <select name="size" value={formData.size} onChange={handleChange}>
-          <option value="SMALL">SMALL (5 slots)</option>
-          <option value="MEDIUM">MEDIUM (3 slots)</option>
-          <option value="LARGE">LARGE (2 slots)</option>
-        </select>
+      <form onSubmit={handleSubmit} className="form-container">
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="size">Package Size *</label>
+            <select 
+              id="size"
+              name="size" 
+              value={formData.size} 
+              onChange={handleChange}
+            >
+              <option value="SMALL">SMALL (5 slots)</option>
+              <option value="MEDIUM">MEDIUM (3 slots)</option>
+              <option value="LARGE">LARGE (2 slots)</option>
+            </select>
+          </div>
 
-        <label>Tracking Number *</label>
-        <input
-          type="text"
-          name="trackingNumber"
-          value={formData.trackingNumber}
-          onChange={handleChange}
-          placeholder="e.g., PKG-001"
-        />
+          <div className="form-group">
+            <label htmlFor="trackingNumber">Tracking Number *</label>
+            <input
+              id="trackingNumber"
+              type="text"
+              name="trackingNumber"
+              value={formData.trackingNumber}
+              onChange={handleChange}
+              placeholder="e.g., PKG-001"
+            />
+          </div>
+        </div>
 
-        <label>Sender Name *</label>
-        <input
-          type="text"
-          name="senderName"
-          value={formData.senderName}
-          onChange={handleChange}
-          placeholder="John Sender"
-        />
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="senderName">Sender Name *</label>
+            <input
+              id="senderName"
+              type="text"
+              name="senderName"
+              value={formData.senderName}
+              onChange={handleChange}
+              placeholder="John Sender"
+            />
+          </div>
 
-        <label>Recipient Name *</label>
-        <input
-          type="text"
-          name="recipientName"
-          value={formData.recipientName}
-          onChange={handleChange}
-          placeholder="Jane Recipient"
-        />
+          <div className="form-group">
+            <label htmlFor="senderEmail">Sender Email *</label>
+            <input
+              id="senderEmail"
+              type="email"
+              name="senderEmail"
+              value={formData.senderEmail}
+              onChange={handleChange}
+              placeholder="john@example.com"
+            />
+          </div>
+        </div>
 
-        <button type="submit">Add Package</button>
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="recipientName">Recipient Name *</label>
+            <input
+              id="recipientName"
+              type="text"
+              name="recipientName"
+              value={formData.recipientName}
+              onChange={handleChange}
+              placeholder="Jane Recipient"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="recipientEmail">Recipient Email *</label>
+            <input
+              id="recipientEmail"
+              type="email"
+              name="recipientEmail"
+              value={formData.recipientEmail}
+              onChange={handleChange}
+              placeholder="jane@example.com"
+            />
+          </div>
+        </div>
+
+        <button type="submit" className="btn-primary">Add Package</button>
       </form>
     </div>
   );
