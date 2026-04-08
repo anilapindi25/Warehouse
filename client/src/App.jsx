@@ -19,7 +19,7 @@ function App() {
   const fetchPackages = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(API_BASE_URL);
+      const response = await axios.get(API_BASE_URL,{timeout:20000});
       setPackages(response.data.data || []);
       setError(null);
     } catch (err) {
@@ -44,7 +44,7 @@ function App() {
   // Fetch capacity status
   const fetchCapacity = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/capacity`);
+      const response = await axios.get(`${API_BASE_URL}/capacity`,{timeout:20000});
       setCapacity(response.data.data || {});
     } catch (err) {
       console.error('Failed to fetch capacity:', err);
@@ -64,11 +64,9 @@ function App() {
   try {
     console.log("Sending:", packageData); // ✅ Debug
 
-    const response = await axios.post(
-      `${API_BASE_URL}/add`,
-      packageData
-    );
-
+    axios.post(`${API_BASE_URL}/add`, packageData, {
+  timeout: 20000 // 20 seconds
+});
     setSuccess(`✅ Package added successfully!`);
     setError(null);
 
@@ -100,7 +98,7 @@ function App() {
       const removedPackage = packages.find(p => p._id === id);
       const trackingNumber = removedPackage?.trackingNumber || 'Package';
       
-      await axios.delete(`${API_BASE_URL}/remove/${id}`);
+      await axios.delete(`${API_BASE_URL}/remove/${id}`,{timeout:20000});
       
       setSuccess(`✅ ${trackingNumber} removed successfully!`);
       setError(null);
