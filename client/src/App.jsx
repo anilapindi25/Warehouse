@@ -6,7 +6,7 @@ import PackageList from './components/PackageList';
 import Alert from './components/Alert';
 import './App.css';
 
-const API_BASE_URL =  "https://warehouse-1-rc0y.onrender.com/api/packages";;
+const API_BASE_URL =   'http://localhost:5000/api/packages';
 
 function App() {
   const [packages, setPackages] = useState([]);
@@ -19,7 +19,7 @@ function App() {
   const fetchPackages = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(API_BASE_URL,{timeout:20000});
+      const response = await axios.get(API_BASE_URL);
       setPackages(response.data.data || []);
       setError(null);
     } catch (err) {
@@ -44,7 +44,7 @@ function App() {
   // Fetch capacity status
   const fetchCapacity = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/capacity`,{timeout:20000});
+      const response = await axios.get(`${API_BASE_URL}/capacity`);
       setCapacity(response.data.data || {});
     } catch (err) {
       console.error('Failed to fetch capacity:', err);
@@ -61,36 +61,47 @@ function App() {
 
   // Handle add package
   const handleAddPackage = async (packageData) => {
-  try {
-    console.log("Sending:", packageData); // ✅ Debug
-
-    axios.post(`${API_BASE_URL}/add`, packageData, {
-  timeout: 20000 // 20 seconds
-});
-    setSuccess(`✅ Package added successfully!`);
-    setError(null);
-
-    fetchPackages();
-    fetchCapacity();
-
-    setTimeout(() => setSuccess(null), 4000);
-  } catch (err) {
-    console.error("Full error:", err);
-
-    let errorMsg = "❌ Failed to add package";
-
-    if (err.response?.data?.error) {
-      errorMsg = `❌ ${err.response.data.error}`;
-    } else if (err.response?.status === 409) {
-      errorMsg = "❌ No space available";
-    } else if (!err.response) {
-      errorMsg = "❌ Network error";
+    try {
+      const response = await axios.post(`${API_BASE_URL}/add`, packageData);
+      console.log(response)
+      
+      // Show success message with details
+      setSuccess(`✅ Package "${packageData.trackingNumber}" added successfully!`);
+      setError(null);
+      
+      fetchPackages();
+      fetchCapacity();
+      
+      // Clear success message after 4 seconds
+      setTimeout(() => setSuccess(null), 4000);
+    } catch (err) {
+      let errorMsg = 'Failed to add package';
+      
+      // Parse specific error messages
+      if (err.response?.status === 409) {
+        // Capacity exceeded
+        const details = err.response?.data?.details;
+        if (details) {
+          errorMsg = `❌ No space available for ${details.size} packages! (${details.current}/${details.capacity} slots used)`;
+        } else {
+          errorMsg = '❌ No space available for this package size';
+        }
+      } else if (err.response?.status === 400) {
+        // Validation error
+        errorMsg = `⚠️ ${err.response?.data?.error || 'Invalid package data'}`;
+      } else if (err.response?.status === 500) {
+        errorMsg = '❌ Server error. Please try again later';
+      } else if (!err.response) {
+        errorMsg = '❌ Network error. Please check your connection';
+      }
+      
+      setError(errorMsg);
+      console.error('Error adding package:', err);
+      
+      // Clear error message after 5 seconds
+      setTimeout(() => setError(null), 5000);
     }
-
-    setError(errorMsg);
-    setTimeout(() => setError(null), 5000);
-  }
-};
+  };
 
   // Handle remove package
   const handleRemovePackage = async (id) => {
@@ -98,7 +109,7 @@ function App() {
       const removedPackage = packages.find(p => p._id === id);
       const trackingNumber = removedPackage?.trackingNumber || 'Package';
       
-      await axios.delete(`${API_BASE_URL}/remove/${id}`,{timeout:20000});
+      await axios.delete(`${API_BASE_URL}/remove/${id}`);
       
       setSuccess(`✅ ${trackingNumber} removed successfully!`);
       setError(null);
