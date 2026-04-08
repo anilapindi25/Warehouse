@@ -61,47 +61,38 @@ function App() {
 
   // Handle add package
   const handleAddPackage = async (packageData) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/add`, packageData);
-      console.log(response)
-      
-      // Show success message with details
-      setSuccess(`✅ Package "${packageData.trackingNumber}" added successfully!`);
-      setError(null);
-      
-      fetchPackages();
-      fetchCapacity();
-      
-      // Clear success message after 4 seconds
-      setTimeout(() => setSuccess(null), 4000);
-    } catch (err) {
-      let errorMsg = 'Failed to add package';
-      
-      // Parse specific error messages
-      if (err.response?.status === 409) {
-        // Capacity exceeded
-        const details = err.response?.data?.details;
-        if (details) {
-          errorMsg = `❌ No space available for ${details.size} packages! (${details.current}/${details.capacity} slots used)`;
-        } else {
-          errorMsg = '❌ No space available for this package size';
-        }
-      } else if (err.response?.status === 400) {
-        // Validation error
-        errorMsg = `⚠️ ${err.response?.data?.error || 'Invalid package data'}`;
-      } else if (err.response?.status === 500) {
-        errorMsg = '❌ Server error. Please try again later';
-      } else if (!err.response) {
-        errorMsg = '❌ Network error. Please check your connection';
-      }
-      
-      setError(errorMsg);
-      console.error('Error adding package:', err);
-      
-      // Clear error message after 5 seconds
-      setTimeout(() => setError(null), 5000);
+  try {
+    console.log("Sending:", packageData); // ✅ Debug
+
+    const response = await axios.post(
+      `${API_BASE_URL}/add`,
+      packageData
+    );
+
+    setSuccess(`✅ Package added successfully!`);
+    setError(null);
+
+    fetchPackages();
+    fetchCapacity();
+
+    setTimeout(() => setSuccess(null), 4000);
+  } catch (err) {
+    console.error("Full error:", err);
+
+    let errorMsg = "❌ Failed to add package";
+
+    if (err.response?.data?.error) {
+      errorMsg = `❌ ${err.response.data.error}`;
+    } else if (err.response?.status === 409) {
+      errorMsg = "❌ No space available";
+    } else if (!err.response) {
+      errorMsg = "❌ Network error";
     }
-  };
+
+    setError(errorMsg);
+    setTimeout(() => setError(null), 5000);
+  }
+};
 
   // Handle remove package
   const handleRemovePackage = async (id) => {
