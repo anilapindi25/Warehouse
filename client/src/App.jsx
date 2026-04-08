@@ -6,7 +6,7 @@ import PackageList from './components/PackageList';
 import Alert from './components/Alert';
 import './App.css';
 
-const API_BASE_URL =   'http://localhost:5000/api/packages';
+const API_BASE_URL =  "https://warehouse-1-rc0y.onrender.com/api/packages";;
 
 function App() {
   const [packages, setPackages] = useState([]);
