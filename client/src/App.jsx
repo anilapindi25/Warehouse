@@ -63,6 +63,7 @@ function App() {
   const handleAddPackage = async (packageData) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/add`, packageData);
+      console.log(response)
       
       // Show success message with details
       setSuccess(`✅ Package "${packageData.trackingNumber}" added successfully!`);
